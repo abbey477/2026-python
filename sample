@@ -1,0 +1,27 @@
+import time
+
+def benchmark_query(query, iterations=3):
+    times = []
+    
+    for i in range(iterations):
+        # Clear cache before each run
+        spark.sql("CLEAR CACHE")
+        
+        start = time.time()
+        df = spark.sql(query)
+        count = df.count()
+        end = time.time()
+        
+        elapsed = end - start
+        times.append(elapsed)
+        print(f"Run {i+1}: {elapsed:.2f} seconds, Count: {count:,}")
+    
+    avg_time = sum(times) / len(times)
+    print(f"\nAverage: {avg_time:.2f} seconds")
+    print(f"Min: {min(times):.2f} seconds")
+    print(f"Max: {max(times):.2f} seconds")
+    return times
+
+# Run the benchmark
+query = "SELECT /*+ NOCACHE */ * FROM your_view"
+benchmark_query(query, iterations=3)
