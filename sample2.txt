@@ -1,0 +1,27 @@
+import time
+
+def test_query(query, iterations=3):
+    """Simple performance test with fail-fast"""
+    print(f"Testing: {query}\n")
+    times = []
+    
+    for i in range(iterations):
+        try:
+            spark.sql("CLEAR CACHE")
+            
+            start = time.time()
+            count = spark.sql(query).count()
+            elapsed = time.time() - start
+            
+            times.append(elapsed)
+            print(f"Run {i+1}: {elapsed:.2f}s | Count: {count:,}")
+            
+        except Exception as e:
+            print(f"Run {i+1} FAILED: {str(e)}")
+            raise  # Fail fast - stop immediately on error
+    
+    avg = sum(times) / len(times)
+    print(f"\nAverage: {avg:.2f}s")
+    print(f"Min: {min(times):.2f}s")
+    print(f"Max: {max(times):.2f}s")
+    return times
