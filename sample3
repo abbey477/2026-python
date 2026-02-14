@@ -1,0 +1,31 @@
+import time
+
+def warm_up_cluster(iterations=2, range_size=10000000):
+    """
+    Warm up cluster without caching any actual data
+    
+    Parameters:
+    - iterations: number of warm-up runs (default: 2)
+    - range_size: size of dummy data for warm-up (default: 10M)
+    """
+    print(f"Warming up cluster ({iterations} iterations)...")
+    for i in range(iterations):
+        spark.range(range_size).count()
+        print(f"  Iteration {i+1} complete")
+    print("Warm-up done\n")
+
+# Usage examples:
+
+# Default warm-up
+warm_up_cluster()
+
+# Custom iterations
+warm_up_cluster(iterations=3)
+
+# Custom range size
+warm_up_cluster(iterations=2, range_size=5000000)
+
+# Now run your test
+start = time.time()
+result = spark.sql("SELECT * FROM your_view").count()
+print(f"Query took: {time.time() - start:.2f} seconds")
