@@ -1,0 +1,26 @@
+import time
+
+def warm_up_with_view(warm_up_view, iterations=2):
+    """
+    Warm up cluster by querying a different view
+    
+    Parameters:
+    - warm_up_view: name of the view to use for warm-up
+    - iterations: number of warm-up runs (default: 2)
+    """
+    print(f"Warming up cluster using view: {warm_up_view}")
+    for i in range(iterations):
+        spark.sql(f"SELECT * FROM {warm_up_view}").count()
+        print(f"  Warm-up iteration {i+1} complete")
+    print("Warm-up done\n")
+
+# Usage:
+
+# Warm up with a different view
+warm_up_with_view("some_other_view")
+
+# Now run your actual test
+start = time.time()
+result = spark.sql("SELECT * FROM your_actual_test_view").count()
+print(f"Test query took: {time.time() - start:.2f} seconds")
+print(f"Records: {result}")
