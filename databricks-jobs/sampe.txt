@@ -1,1 +1,49 @@
-ddads
+%sql
+EXPLAIN CREATE MATERIALIZED VIEW
+AS
+SELECT
+    __cob_date,
+    eci,
+    country_of_domicile,
+    country_of_asset,
+    organization.country_of_incorporation,
+    alt_ids.identifier_type,
+    alt_ids.identifier_value
+FROM (
+    SELECT
+        __cob_date,
+        eci,
+        country_of_domicile,
+        country_of_asset,
+        organization,
+        EXPLODE(alternate_identifiers) AS alt_ids
+    FROM x_prod.reference_data.party cp
+    WHERE __end_at IS NULL
+) subq
+WHERE alt_ids.identifier_type = 'JPM'
+
+
+==================================================
+
+%sql
+EXPLAIN CREATE MATERIALIZED VIEW
+AS
+SELECT
+    __cob_date,
+    instrumentId,
+    bloombergIndustryGroup,
+    jpmSecurityType,
+    countryofrisk,
+    alt_ids.assetIDType,
+    alt_ids.assetID
+FROM (
+    SELECT
+        __cob_date,
+        instrumentId,
+        bloombergIndustryGroup,
+        jpmSecurityType,
+        countryofrisk,
+        EXPLODE(alternateIdentifiers) AS alt_ids
+    FROM `x_prod`.refdata.instrument
+    WHERE __end_at IS NULL
+) subq
